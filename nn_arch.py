@@ -1,6 +1,6 @@
 from keras.layers import Dense, SeparableConv1D, LSTM
-from keras.layers import Dropout, GlobalMaxPooling1D
-from keras.layers import Lambda, Concatenate, Masking
+from keras.layers import Dropout, GlobalMaxPooling1D, Masking
+from keras.layers import Lambda, Concatenate
 
 import keras.backend as K
 

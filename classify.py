@@ -5,6 +5,7 @@ import re
 import numpy as np
 
 from keras.models import load_model
+
 from keras.preprocessing.sequence import pad_sequences
 
 from util import load_word_re, load_type_re, load_pair, word_replace, map_item
