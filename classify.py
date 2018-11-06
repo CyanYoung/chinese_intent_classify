@@ -11,6 +11,13 @@ from keras.preprocessing.sequence import pad_sequences
 from util import load_word_re, load_type_re, load_pair, word_replace, map_item
 
 
+def ind2label(label_inds):
+    ind_labels = dict()
+    for word, ind in label_inds.items():
+        ind_labels[ind] = word
+    return ind_labels
+
+
 seq_len = 30
 
 path_stop_word = 'dict/stop_word.txt'
@@ -29,9 +36,7 @@ with open(path_word2ind, 'rb') as f:
 with open(path_label_ind, 'rb') as f:
     label_inds = pk.load(f)
 
-ind_labels = dict()
-for label, ind in label_inds.items():
-    ind_labels[ind] = label
+ind_labels = ind2label(label_inds)
 
 paths = {'dnn': 'model/dnn.h5',
          'cnn': 'model/cnn.h5',
