@@ -13,7 +13,7 @@ def dnn(embed_input, class_num):
     x = mean(embed_input)
     x = da1(x)
     x = da2(x)
-    x = Dropout(0.5)(x)
+    x = Dropout(0.2)(x)
     return da3(x)
 
 
@@ -32,7 +32,7 @@ def cnn(embed_input, class_num):
     x3 = mp(x3)
     x = Concatenate()([x1, x2, x3])
     x = da1(x)
-    x = Dropout(0.5)(x)
+    x = Dropout(0.2)(x)
     return da2(x)
 
 
@@ -41,5 +41,5 @@ def rnn(embed_input, class_num):
     da = Dense(class_num, activation='softmax')
     x = Masking()(embed_input)
     x = ra(x)
-    x = Dropout(0.5)(x)
+    x = Dropout(0.2)(x)
     return da(x)
