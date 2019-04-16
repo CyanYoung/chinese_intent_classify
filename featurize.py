@@ -13,6 +13,7 @@ min_freq = 5
 
 path_bow = 'model/ml/bow.pkl'
 path_tfidf = 'model/ml/tfidf.pkl'
+path_label_ind = 'feat/label_ind.pkl'
 
 
 def bow(sents, path_bow, mode):
@@ -44,13 +45,20 @@ def featurize(paths, mode):
     labels = flat_read(paths['data'], 'label')
     bow_sents = bow(sents, path_bow, mode)
     tfidf_sents = tfidf(bow_sents, path_tfidf, mode)
-    labels = np.array(labels)
+    if mode == 'train':
+        label2ind(labels, path_label_ind)
+    with open(path_label_ind, 'rb') as f:
+        label_inds = pk.load(f)
+    inds = list()
+    for label in labels:
+        inds.append(label_inds[label])
+    inds = np.array(inds)
     with open(paths['bow_sent'], 'wb') as f:
         pk.dump(bow_sents, f)
     with open(paths['tfidf_sent'], 'wb') as f:
         pk.dump(tfidf_sents, f)
     with open(paths['label'], 'wb') as f:
-        pk.dump(labels, f)
+        pk.dump(inds, f)
 
 
 if __name__ == '__main__':
