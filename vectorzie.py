@@ -13,9 +13,9 @@ embed_len = 200
 max_vocab = 5000
 seq_len = 30
 
-path_word_vec = 'feat/word_vec.pkl'
-path_word2ind = 'model/word2ind.pkl'
-path_embed = 'feat/embed.pkl'
+path_word_vec = 'feat/nn/word_vec.pkl'
+path_word2ind = 'model/nn/word2ind.pkl'
+path_embed = 'feat/nn/embed.pkl'
 path_label_ind = 'feat/label_ind.pkl'
 
 
@@ -77,10 +77,10 @@ def vectorize(path_data, path_sent, path_label, mode):
 
 if __name__ == '__main__':
     path_data = 'data/train.csv'
-    path_sent = 'feat/sent_train.pkl'
-    path_label = 'feat/label_train.pkl'
+    path_sent = 'feat/nn/sent_train.pkl'
+    path_label = 'feat/nn/label_train.pkl'
     vectorize(path_data, path_sent, path_label, 'train')
     path_data = 'data/test.csv'
-    path_sent = 'feat/sent_test.pkl'
-    path_label = 'feat/label_test.pkl'
+    path_sent = 'feat/nn/sent_test.pkl'
+    path_label = 'feat/nn/label_test.pkl'
     vectorize(path_data, path_sent, path_label, 'test')
