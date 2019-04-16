@@ -10,24 +10,32 @@ from util import flat_read, map_item
 
 
 path_test = 'data/test.csv'
-path_sent = 'feat/sent_test.pkl'
+path_ml_sent = 'feat/ml/bow_sent_test.pkl'
+path_nn_sent = 'feat/nn/sent_test.pkl'
 path_label = 'feat/label_test.pkl'
 texts = flat_read(path_test, 'text')
-with open(path_sent, 'rb') as f:
-    sents = pk.load(f)
+with open(path_ml_sent, 'rb') as f:
+    ml_sents = pk.load(f)
+with open(path_nn_sent, 'rb') as f:
+    nn_sents = pk.load(f)
 with open(path_label, 'rb') as f:
     labels = pk.load(f)
 
 class_num = len(ind_labels)
 
-paths = {'dnn': 'stat/metric/dnn.csv',
+paths = {'svm': 'stat/metric/svm.csv',
+         'xgb': 'stat/metric/xgb.csv',
+         'dnn': 'stat/metric/dnn.csv',
          'cnn': 'stat/metric/cnn.csv',
          'rnn': 'stat/metric/rnn.csv'}
 
 
 def test(name, sents, labels):
     model = map_item(name, models)
-    probs = model.predict(sents)
+    if name == 'svm' or name == 'xgb':
+        probs = model.predict_proba(sents)
+    else:
+        probs = model.predict(sents)
     preds = np.argmax(probs, axis=1)
     precs = precision_score(labels, preds, average=None)
     recs = recall_score(labels, preds, average=None)
@@ -43,6 +51,8 @@ def test(name, sents, labels):
 
 
 if __name__ == '__main__':
-    test('dnn', sents, labels)
-    test('cnn', sents, labels)
-    test('rnn', sents, labels)
+    test('svm', ml_sents, labels)
+    test('xgb', ml_sents, labels)
+    test('dnn', nn_sents, labels)
+    test('cnn', nn_sents, labels)
+    test('rnn', nn_sents, labels)
