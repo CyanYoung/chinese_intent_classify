@@ -71,6 +71,7 @@ def nn_predict(text, name):
 
 
 def predict(text, name):
+    text = clean(text)
     if name == 'svm' or name == 'xgb':
         probs = ml_predict(text, name, 'bow')
     else:
@@ -87,7 +88,6 @@ def predict(text, name):
 if __name__ == '__main__':
     while True:
         text = input('text: ')
-        text = clean(text)
         print('svm: %s' % predict(text, 'svm'))
         print('xgb: %s' % predict(text, 'xgb'))
         print('dnn: %s' % predict(text, 'dnn'))
