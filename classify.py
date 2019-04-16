@@ -1,14 +1,14 @@
 import pickle as pk
 
-import re
-
 import numpy as np
 
 from keras.models import load_model
 
 from keras.preprocessing.sequence import pad_sequences
 
-from util import load_word_re, load_type_re, load_pair, word_replace, map_item
+from preprocess import clean
+
+from util import map_item
 
 
 def ind2label(label_inds):
@@ -19,15 +19,6 @@ def ind2label(label_inds):
 
 
 seq_len = 30
-
-path_stop_word = 'dict/stop_word.txt'
-path_type_dir = 'dict/word_type'
-path_homo = 'dict/homo.csv'
-path_syno = 'dict/syno.csv'
-stop_word_re = load_word_re(path_stop_word)
-word_type_re = load_type_re(path_type_dir)
-homo_dict = load_pair(path_homo)
-syno_dict = load_pair(path_syno)
 
 path_bow = 'model/ml/bow.pkl'
 path_tfidf = 'model/ml/tfidf.pkl'
@@ -80,11 +71,6 @@ def nn_predict(text, name):
 
 
 def predict(text, name):
-    text = re.sub(stop_word_re, '', text.strip())
-    for word_type, word_re in word_type_re.items():
-        text = re.sub(word_re, word_type, text)
-    text = word_replace(text, homo_dict)
-    text = word_replace(text, syno_dict)
     if name == 'svm' or name == 'xgb':
         probs = ml_predict(text, name, 'bow')
     else:
@@ -101,6 +87,7 @@ def predict(text, name):
 if __name__ == '__main__':
     while True:
         text = input('text: ')
+        text = clean(text)
         print('svm: %s' % predict(text, 'svm'))
         print('xgb: %s' % predict(text, 'xgb'))
         print('dnn: %s' % predict(text, 'dnn'))
