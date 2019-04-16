@@ -29,7 +29,20 @@ word_type_re = load_type_re(path_type_dir)
 homo_dict = load_pair(path_homo)
 syno_dict = load_pair(path_syno)
 
-path_word2ind = 'model/word2ind.pkl'
+path_bow = 'model/ml/bow.pkl'
+path_tfidf = 'model/ml/tfidf.pkl'
+path_svm = 'model/ml/svm.pkl'
+path_xgb = 'model/ml/xgb.pkl'
+with open(path_bow, 'rb') as f:
+    bow = pk.load(f)
+with open(path_tfidf, 'rb') as f:
+    tfidf = pk.load(f)
+with open(path_svm, 'rb') as f:
+    svm = pk.load(f)
+with open(path_xgb, 'rb') as f:
+    xgb = pk.load(f)
+
+path_word2ind = 'model/nn/word2ind.pkl'
 path_label_ind = 'feat/label_ind.pkl'
 with open(path_word2ind, 'rb') as f:
     word2ind = pk.load(f)
@@ -38,13 +51,32 @@ with open(path_label_ind, 'rb') as f:
 
 ind_labels = ind2label(label_inds)
 
-paths = {'dnn': 'model/dnn.h5',
-         'cnn': 'model/cnn.h5',
-         'rnn': 'model/rnn.h5'}
+feats = {'bow': bow,
+         'tfidf': tfidf}
 
-models = {'dnn': load_model(map_item('dnn', paths)),
+paths = {'dnn': 'model/nn/dnn.h5',
+         'cnn': 'model/nn/cnn.h5',
+         'rnn': 'model/nn/rnn.h5'}
+
+models = {'svm': svm,
+          'xgb': xgb,
+          'dnn': load_model(map_item('dnn', paths)),
           'cnn': load_model(map_item('cnn', paths)),
           'rnn': load_model(map_item('rnn', paths))}
+
+
+def ml_predict(text, name, feat):
+    feat = map_item(feat, feats)
+    sent = feat.transform([text])
+    model = map_item(name, models)
+    return model.predict_proba(sent)[0]
+
+
+def nn_predict(text, name):
+    seq = word2ind.texts_to_sequences([text])[0]
+    pad_seq = pad_sequences([seq], maxlen=seq_len)
+    model = map_item(name, models)
+    return model.predict(pad_seq)[0]
 
 
 def predict(text, name):
@@ -53,10 +85,10 @@ def predict(text, name):
         text = re.sub(word_re, word_type, text)
     text = word_replace(text, homo_dict)
     text = word_replace(text, syno_dict)
-    seq = word2ind.texts_to_sequences([text])[0]
-    pad_seq = pad_sequences([seq], maxlen=seq_len)
-    model = map_item(name, models)
-    probs = model.predict(pad_seq)[0]
+    if name == 'svm' or name == 'xgb':
+        probs = ml_predict(text, name, 'bow')
+    else:
+        probs = nn_predict(text, name)
     sort_probs = sorted(probs, reverse=True)
     sort_inds = np.argsort(-probs)
     sort_preds = [ind_labels[ind] for ind in sort_inds]
@@ -69,6 +101,8 @@ def predict(text, name):
 if __name__ == '__main__':
     while True:
         text = input('text: ')
+        print('svm: %s' % predict(text, 'svm'))
+        print('xgb: %s' % predict(text, 'xgb'))
         print('dnn: %s' % predict(text, 'dnn'))
         print('cnn: %s' % predict(text, 'cnn'))
         print('rnn: %s' % predict(text, 'rnn'))
