@@ -4,7 +4,6 @@ import numpy as np
 
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from keras.utils import to_categorical
 
 from util import flat_read
 
@@ -47,19 +46,17 @@ def label2ind(labels, path_label_ind):
         pk.dump(label_inds, f)
 
 
-def align(sents, labels, path_sent, path_label, mode):
+def align(sents, labels, path_sent, path_label):
     with open(path_word2ind, 'rb') as f:
         model = pk.load(f)
     seqs = model.texts_to_sequences(sents)
     pad_seqs = pad_sequences(seqs, maxlen=seq_len)
     with open(path_label_ind, 'rb') as f:
         label_inds = pk.load(f)
-    class_num = len(label_inds)
     inds = list()
     for label in labels:
         inds.append(label_inds[label])
-    if mode == 'train':
-        inds = to_categorical(inds, num_classes=class_num)
+    inds = np.array(inds)
     with open(path_sent, 'wb') as f:
         pk.dump(pad_seqs, f)
     with open(path_label, 'wb') as f:
@@ -72,16 +69,15 @@ def vectorize(path_data, path_sent, path_label, mode):
     if mode == 'train':
         embed(sents, path_word2ind, path_word_vec, path_embed)
         label2ind(labels, path_label_ind)
-    align(sents, labels, path_sent, path_label, mode)
+    align(sents, labels, path_sent, path_label)
 
 
 if __name__ == '__main__':
-    prefix = 'feat/nn/'
     path_data = 'data/train.csv'
-    path_sent = prefix + 'sent_train.pkl'
-    path_label = prefix + 'label_train.pkl'
+    path_sent = 'feat/nn/sent_train.pkl'
+    path_label = 'feat/label_train.pkl'
     vectorize(path_data, path_sent, path_label, 'train')
     path_data = 'data/test.csv'
-    path_sent = prefix + 'sent_test.pkl'
-    path_label = prefix + 'label_test.pkl'
+    path_sent = 'feat/nn/sent_test.pkl'
+    path_label = 'feat/label_test.pkl'
     vectorize(path_data, path_sent, path_label, 'test')

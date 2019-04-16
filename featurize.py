@@ -67,10 +67,10 @@ if __name__ == '__main__':
     paths['data'] = 'data/train.csv'
     paths['bow_sent'] = prefix + 'bow_sent_train.pkl'
     paths['tfidf_sent'] = prefix + 'tfidf_sent_train.pkl'
-    paths['label'] = prefix + 'label_train.pkl'
+    paths['label'] = 'feat/label_train.pkl'
     featurize(paths, 'train')
     paths['data'] = 'data/test.csv'
     paths['bow_sent'] = prefix + 'bow_sent_test.pkl'
     paths['tfidf_sent'] = prefix + 'tfidf_sent_test.pkl'
-    paths['label'] = prefix + 'label_test.pkl'
+    paths['label'] = 'feat/label_test.pkl'
     featurize(paths, 'test')
