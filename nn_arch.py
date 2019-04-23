@@ -1,6 +1,5 @@
-from keras.layers import Dense, SeparableConv1D, LSTM
-from keras.layers import Dropout, GlobalMaxPooling1D, Masking
-from keras.layers import Lambda, Concatenate
+from keras.layers import Dense, SeparableConv1D, LSTM, Lambda
+from keras.layers import Dropout, GlobalMaxPooling1D, Concatenate, Bidirectional
 
 import keras.backend as K
 
@@ -37,9 +36,11 @@ def cnn(embed_input, class_num):
 
 
 def rnn(embed_input, class_num):
-    ra = LSTM(200, activation='tanh')
+    ra = LSTM(200, activation='tanh', return_sequences=True)
+    ba = Bidirectional(ra)
+    mp = GlobalMaxPooling1D()
     da = Dense(class_num, activation='softmax')
-    x = Masking()(embed_input)
-    x = ra(x)
+    x = ba(embed_input)
+    x = mp(x)
     x = Dropout(0.2)(x)
     return da(x)
