@@ -9,6 +9,8 @@ from classify import ind_labels, models
 from util import flat_read, map_item
 
 
+detail = False
+
 path_test = 'data/test.csv'
 path_ml_sent = 'feat/ml/sent_test.pkl'
 path_nn_sent = 'feat/nn/sent_test.pkl'
@@ -30,7 +32,7 @@ paths = {'svm': 'metric/svm.csv',
          'rnn': 'metric/rnn.csv'}
 
 
-def test(name, sents, labels, detail):
+def test(name, sents, labels):
     model = map_item(name, models)
     if name == 'svm' or name == 'xgb':
         probs = model.predict_proba(sents)
@@ -52,8 +54,8 @@ def test(name, sents, labels, detail):
 
 
 if __name__ == '__main__':
-    test('svm', ml_sents, labels, detail=False)
-    test('xgb', ml_sents, labels, detail=False)
-    test('dnn', nn_sents, labels, detail=False)
-    test('cnn', nn_sents, labels, detail=False)
-    test('rnn', nn_sents, labels, detail=False)
+    test('svm', ml_sents, labels)
+    test('xgb', ml_sents, labels)
+    test('dnn', nn_sents, labels)
+    test('cnn', nn_sents, labels)
+    test('rnn', nn_sents, labels)
