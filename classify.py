@@ -21,13 +21,10 @@ def ind2label(label_inds):
 seq_len = 30
 
 path_bow = 'model/ml/bow.pkl'
-path_tfidf = 'model/ml/tfidf.pkl'
 path_svm = 'model/ml/svm.pkl'
 path_xgb = 'model/ml/xgb.pkl'
 with open(path_bow, 'rb') as f:
     bow = pk.load(f)
-with open(path_tfidf, 'rb') as f:
-    tfidf = pk.load(f)
 with open(path_svm, 'rb') as f:
     svm = pk.load(f)
 with open(path_xgb, 'rb') as f:
@@ -42,9 +39,6 @@ with open(path_label_ind, 'rb') as f:
 
 ind_labels = ind2label(label_inds)
 
-feats = {'bow': bow,
-         'tfidf': tfidf}
-
 paths = {'dnn': 'model/nn/dnn.h5',
          'cnn': 'model/nn/cnn.h5',
          'rnn': 'model/nn/rnn.h5'}
@@ -56,9 +50,8 @@ models = {'svm': svm,
           'rnn': load_model(map_item('rnn', paths))}
 
 
-def ml_predict(text, name, feat):
-    feat = map_item(feat, feats)
-    sent = feat.transform([text])
+def ml_predict(text, name):
+    sent = bow.transform([text])
     model = map_item(name, models)
     return model.predict_proba(sent)[0]
 
@@ -73,7 +66,7 @@ def nn_predict(text, name):
 def predict(text, name):
     text = clean(text)
     if name == 'svm' or name == 'xgb':
-        probs = ml_predict(text, name, 'bow')
+        probs = ml_predict(text, name)
     else:
         probs = nn_predict(text, name)
     sort_probs = sorted(probs, reverse=True)
