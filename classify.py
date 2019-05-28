@@ -21,10 +21,13 @@ def ind2label(label_inds):
 seq_len = 30
 
 path_bow = 'model/ml/bow.pkl'
+path_svd = 'model/ml/svd.pkl'
 path_svm = 'model/ml/svm.pkl'
 path_xgb = 'model/ml/xgb.pkl'
 with open(path_bow, 'rb') as f:
     bow = pk.load(f)
+with open(path_svd, 'rb') as f:
+    svd = pk.load(f)
 with open(path_svm, 'rb') as f:
     svm = pk.load(f)
 with open(path_xgb, 'rb') as f:
@@ -52,6 +55,7 @@ models = {'svm': svm,
 
 def ml_predict(text, name):
     sent = bow.transform([text])
+    sent = svd.transform(sent)
     model = map_item(name, models)
     return model.predict_proba(sent)[0]
 
