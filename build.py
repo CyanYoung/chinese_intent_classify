@@ -60,7 +60,7 @@ def svm_fit(sents, labels):
 
 
 def xgb_fit(sents, labels):
-    model = XGBC(max_depth=5, learning_rate=0.1, objective='binary:logistic',
+    model = XGBC(max_depth=5, learning_rate=0.1, objective='multi:softmax',
                  n_estimators=100, booster='gbtree')
     model.fit(sents, labels)
     with open(map_item('xgb', paths), 'wb') as f:
